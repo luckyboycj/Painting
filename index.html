@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画板</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <canvas id="canvas" height="100" width="100"></canvas>
+    <script>
+        let canvas = document.getElementById("canvas");
+        canvas.width = document.documentElement.clientWidth
+        canvas.height = document.documentElement.clientHeight
+        let ctx = canvas.getContext("2d");
+        ctx.fillStyle = "rgb(200,0,0)";
+        ctx.strokeStyle = 'none';
+        ctx.lineWidth = 8;
+        ctx.lineCap = "round";
+        // 连线边角变圆
+
+        // 描边三角形
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+
+        let painting = false
+        let last
+
+        var isTouchDevice = 'ontouchstart' in document.documentElement;
+        if (isTouchDevice) {
+            canvas.ontouchstart = (e) => {
+                let x = e.touches[0].clientX
+                let y = e.touches[0].clientY
+                last = [x, y]
+            }
+            canvas.ontouchmove = (e) => {
+                let x = e.touches[0].clientX
+                let y = e.touches[0].clientY
+                drawLine(last[0], last[1], x, y)
+                last = [x, y]
+                // ctx.beginPath();
+                // ctx.arc(x, y, 10, 0, 2 * Math.PI);
+                // ctx.strokeStyle = 'none';
+                // ctx.fill();
+            }// 手机触屏
+        } else {
+            canvas.onmousedown = (e) => {
+                painting = true
+                last = [e.clientX, e.clientY]
+                // 三行画线，第一行，记录上一次
+            }
+            canvas.onmousemove = (e) => {
+                if (painting === true) {
+                    drawLine(last[0], last[1], e.clientX, e.clientY)
+                    // 第二行，连线
+                    last = [e.clientX, e.clientY]
+                    // 第三行，更新
+                    // ctx.beginPath();
+                    // ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI);
+                    // ctx.strokeStyle = 'none';
+                    // ctx.fill();画点
+                } else {
+                    console.log('什么都不做')
+                }
+            }
+        }
+        canvas.onmouseup = () => {
+            painting = false
+        }
+    </script>
+</body>
+
+</html>
